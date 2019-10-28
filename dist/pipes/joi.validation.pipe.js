@@ -16,7 +16,7 @@ let JoiValidationPipeTransform = class JoiValidationPipeTransform {
         this.schema = schema;
     }
     transform(value) {
-        const { error } = Joi.valid(value, this.schema, { allowUnknown: true });
+        const { error } = Joi.validate(value, this.schema, { allowUnknown: true });
         if (error) {
             throw new common_1.BadRequestException('Validation failed' + error);
         }

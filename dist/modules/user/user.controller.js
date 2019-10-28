@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
-const roels_guard_1 = require("../../guards/roels.guard");
+const roles_guard_1 = require("../../guards/roles.guard");
 const user_service_1 = require("./user.service");
 const auth_util_1 = require("../../utils/auth.util");
 let UserController = class UserController {
@@ -23,10 +23,10 @@ let UserController = class UserController {
     async getUserLoginInfo(req) {
         const user = auth_util_1.auth(req);
         if (user) {
-            return await this.userService.getUserByAccount(user.account);
+            return (await this.userService.getUserByAccount(user.account));
         }
         else {
-            throw new common_1.ForbiddenException('非法请求！');
+            throw new common_1.ForbiddenException('非法请求');
         }
     }
 };
@@ -38,8 +38,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUserLoginInfo", null);
 UserController = __decorate([
-    common_1.Controller('/api/user/'),
-    common_1.UseGuards(roels_guard_1.RolesGuard),
+    common_1.Controller('/api/user'),
+    common_1.UseGuards(roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 exports.UserController = UserController;

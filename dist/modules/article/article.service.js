@@ -14,10 +14,28 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const common_1 = require("@nestjs/common");
-const article_model_1 = require("../../models/article.model");
 const model_util_1 = require("../../utils/model.util");
+const article_model_1 = require("../../models/article.model");
 const category_model_1 = require("../../models/category.model");
-let ArticlesService = class ArticlesService {
+const MarkdownIt = require("markdown-it");
+const hljs = require("highlight.js");
+const mila = require("markdown-it-link-attributes");
+const markdown = new MarkdownIt({
+    highlight: (str, lang) => {
+        if (lang && hljs.getLanguage(lang)) {
+            return `<pre><code class="hljs"> ${hljs.highlight(lang, str, true).value}</code></pre>`;
+        }
+        return `<pre><code class="hljs">${markdown.utils.escapeHtml(str)}</code></pre>`;
+    },
+});
+exports.markdown = markdown;
+markdown.use(mila, {
+    attrs: {
+        target: '_blank',
+        rel: 'noopener',
+    },
+});
+let ArticleService = class ArticleService {
     constructor(articleModel, categoryModel) {
         this.articleModel = articleModel;
         this.categoryModel = categoryModel;
@@ -32,59 +50,103 @@ let ArticlesService = class ArticlesService {
     async update(_id, data) {
         const article = await this.articleModel.findOneAndUpdate({ _id }, data);
         if (!article) {
-            throw new common_1.BadRequestException();
+            throw new common_1.NotFoundException('文章不存在');
         }
         if (article.category && article.category.toString() !== data.category) {
-            console.log(data);
             await Promise.all([
                 this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } }),
                 this.categoryModel.updateOne({ _id: data.category }, { $inc: { articleCount: 1 } }),
             ]);
         }
-    }
-    async getArticle(id) {
-        const article = await this.articleModel
-            .findOneAndUpdate(id, {
-            $inc: { viewCount: 1 },
-        })
-            .populate('category');
         return article;
     }
-    async deleteArticle(id) {
-        const article = await this.articleModel.findById(id);
-        await this.articleModel.deleteOne({ _id: id });
-        if (article.category) {
-            await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
-        }
-        return '删除成功';
-    }
     async getArticles(query, option) {
-        const { page = 1, limit = 10, sort = { createAt: -1 } } = option;
+        const { skip = 1, limit = 10, sort = { createAt: -1 } } = option;
         let filter = {};
-        if (query.category) {
-            filter = Object.assign(Object.assign({}, filter), { category: { $elemMatch: { $eq: query.category } } });
+        if (query.tag) {
+            filter = Object.assign(Object.assign({}, filter), { tags: { $elemMatch: { $eq: query.tag } } });
         }
         else {
             filter = Object.assign(Object.assign({}, filter), query);
         }
         return await this.articleModel
             .find(filter, '-content', {
-            page: (page - 1) * limit,
+            skip: (skip - 1) * limit,
             limit,
             sort,
         })
             .populate('category');
     }
-    async count(query) {
-        return await this.articleModel.countDocuments(query);
+    async getCurrentArticles() {
+        const skip = 0, limit = 3, sort = { createAt: -1 };
+        return await this.articleModel
+            .find({}, '-content', {
+            skip,
+            limit,
+            sort,
+        })
+            .populate('category');
+    }
+    async getArtile(id, isRenderHtml) {
+        let article = null;
+        try {
+            article = await this.articleModel
+                .findByIdAndUpdate(id, {
+                $inc: { viewsCount: 1 },
+            })
+                .populate('category');
+        }
+        catch (_a) {
+            return null;
+        }
+        if (article) {
+            const data = article.toObject();
+            if (isRenderHtml) {
+                data.content = markdown.render(data.content);
+            }
+            const [prev, next] = await Promise.all([
+                this.articleModel.findOne({ _id: { $gt: id } }, 'title', {
+                    sort: { _id: 1 },
+                }),
+                this.articleModel.findOne({ _id: { $lt: id } }, 'title', {
+                    sort: { _id: -1 },
+                }),
+            ]);
+            data.prev = prev;
+            data.next = next;
+            return data;
+        }
+        return article;
+    }
+    async deleteArticle(id) {
+        const article = await this.articleModel.findById(id);
+        let result = await this.articleModel.deleteOne({ _id: id });
+        if (article.category) {
+            await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
+        }
+        return result;
+    }
+    async countArticles(query) {
+        const filter = Object.assign({}, query);
+        return await this.articleModel.countDocuments(filter);
+    }
+    async batchDelete(articleIds) {
+        return this.articleModel
+            .find({ _id: { $in: articleIds } })
+            .then(async (articles) => {
+            articles.map(async (article) => {
+                return await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
+            });
+            return this.articleModel.deleteMany({ _id: { $in: articleIds } });
+        });
     }
 };
-ArticlesService = __decorate([
+ArticleService = __decorate([
     common_1.Injectable(),
     __param(0, model_util_1.InjectModel(article_model_1.ArticleModel)),
     __param(1, model_util_1.InjectModel(category_model_1.CategoryModel)),
     __metadata("design:paramtypes", [mongoose_1.Model,
         mongoose_1.Model])
-], ArticlesService);
-exports.ArticlesService = ArticlesService;
+], ArticleService);
+exports.ArticleService = ArticleService;
 //# sourceMappingURL=article.service.js.map

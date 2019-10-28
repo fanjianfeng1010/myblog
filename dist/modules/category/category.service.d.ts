@@ -1,19 +1,22 @@
+/// <reference types="mongodb" />
 import { Model } from 'mongoose';
 import { Category, CategoryDocument } from '../../models/category.model';
-import { ArticleDocument } from 'src/models/article.model';
 export declare class CategoryService {
     private readonly categoryModel;
-    private readonly ArticleModel;
-    constructor(categoryModel: Model<CategoryDocument>, ArticleModel: Model<ArticleDocument>);
-    create(newCategory: Category): Promise<CategoryDocument>;
-    getCategory(id: string): Promise<CategoryDocument>;
-    getCategories(): Promise<CategoryDocument[]>;
-    update(id: string, data: Category): Promise<CategoryDocument>;
-    deleteCategory(id: string): Promise<ResponseMsg>;
-    batchDelete(categoryIds: string[]): Promise<any>;
+    constructor(categoryModel: Model<CategoryDocument>);
+    create(newCategory: Category): Promise<Category>;
+    update(id: string, data: Category): Promise<Category>;
+    getCategories(query: {}, option: {
+        skip?: number;
+        limit?: number;
+        sort?: object;
+    }): Promise<Category[]>;
+    getCategory(id: string): Promise<Category>;
+    delete(id: string): Promise<any>;
+    batchDelete(categoryIds: string[]): Promise<{
+        ok?: number;
+        n?: number;
+    } & {
+        deletedCount?: number;
+    }>;
 }
-interface ResponseMsg {
-    msg: string;
-    code: number;
-}
-export {};

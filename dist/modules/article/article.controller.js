@@ -11,56 +11,85 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var ArticleController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
+const standard_pagination_validation_1 = require("../../validations/standard.pagination.validation");
 const article_service_1 = require("./article.service");
+const joi_validation_pipe_1 = require("../../pipes/joi.validation.pipe");
 const roles_decorator_1 = require("../../decorators/roles.decorator");
-const roels_guard_1 = require("../../guards/roels.guard");
+const roles_guard_1 = require("../../guards/roles.guard");
 const Joi = require("@hapi/joi");
-let ArticlesController = class ArticlesController {
+let ArticleController = ArticleController_1 = class ArticleController {
     constructor(articleService) {
         this.articleService = articleService;
     }
     async create(article) {
-        await this.articleService.create(article);
+        const result = await this.articleService.create(article);
+        return formatResponse(result);
     }
-    async update(param, article) {
-        console.log('穿进来的参数是' + param, '传进来的主体是' + article);
-        return await this.articleService.update(param.id, article);
-    }
-    async getArticle(query) {
-        let res = await this.articleService.getArticle(query.id);
-        let code = 0, msg = 'ok', data = res;
-        return { code, msg, data };
+    async update(params, article) {
+        let resonseData = {};
+        const data = await this.articleService.update(params.id, article);
+        return formatResponse(data);
     }
     async getArticles(query) {
         const q = {};
         if (query.cid) {
             q.category = query.cid;
         }
+        else if (query.tag) {
+            q.tag = query.tag;
+        }
         const items = await this.articleService.getArticles(q, {
-            page: Number(query.page),
+            skip: Number(query.page),
             limit: Number(query.limit),
         });
-        const totalCount = await this.articleService.count(q);
-        return {
-            code: 0,
-            msg: 'ok',
-            data: items,
+        const totalCount = await this.articleService.countArticles(q);
+        let data = { items, totalCount };
+        return formatResponse(data);
+    }
+    async getCurrent() {
+        const items = await this.articleService.getCurrentArticles();
+        let data = { items };
+        return formatResponse(data);
+    }
+    async getArticle(params, query) {
+        let data = await this.articleService.getArtile(params.id, query.md);
+        let responseData = {
+            data,
+            type: 'article',
         };
+        return responseData;
+    }
+    async deleteArticle(params) {
+        let data = await this.articleService.deleteArticle(params.id);
+        return formatResponse(data);
+    }
+    async deleteArticles(body) {
+        let result = await this.articleService.batchDelete(body.articleIds);
+        let responseData = {
+            data: null,
+        };
+        if (result.deletedCount > 0) {
+            responseData = {
+                data: result,
+            };
+        }
+        return responseData;
     }
 };
-ArticlesController.cIdSchema = {
+ArticleController.cIdSchema = {
     cid: Joi.string()
         .default('')
         .max(50),
 };
-ArticlesController.idSchema = {
+ArticleController.idSchema = {
     id: Joi.string()
         .default('')
         .max(50),
 };
-ArticlesController.deleteArticleSchema = {
+ArticleController.deleteArticlesSchema = {
     articleIds: Joi.array().items(Joi.string()),
 };
 __decorate([
@@ -70,33 +99,73 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ArticlesController.prototype, "create", null);
+], ArticleController.prototype, "create", null);
 __decorate([
     common_1.Put('/articles/:id'),
     roles_decorator_1.Roles('admin'),
-    __param(0, common_1.Param()), __param(1, common_1.Body()),
+    __param(0, common_1.Param()),
+    __param(1, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], ArticlesController.prototype, "update", null);
-__decorate([
-    common_1.Get('/article'),
-    __param(0, common_1.Query()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ArticlesController.prototype, "getArticle", null);
+], ArticleController.prototype, "update", null);
 __decorate([
     common_1.Get('/articles'),
+    joi_validation_pipe_1.JoiValidationPipe(standard_pagination_validation_1.StandardPaginationSchema),
+    joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.cIdSchema),
     __param(0, common_1.Query()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ArticlesController.prototype, "getArticles", null);
-ArticlesController = __decorate([
+], ArticleController.prototype, "getArticles", null);
+__decorate([
+    common_1.Get('/rencent'),
+    joi_validation_pipe_1.JoiValidationPipe(standard_pagination_validation_1.StandardPaginationSchema),
+    joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.cIdSchema),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ArticleController.prototype, "getCurrent", null);
+__decorate([
+    common_1.Get('/article/:id'),
+    joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.idSchema),
+    __param(0, common_1.Param()),
+    __param(1, common_1.Query()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ArticleController.prototype, "getArticle", null);
+__decorate([
+    common_1.Delete('/article/:id'),
+    roles_decorator_1.Roles('admin'),
+    joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.idSchema),
+    __param(0, common_1.Param()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ArticleController.prototype, "deleteArticle", null);
+__decorate([
+    common_1.Delete('/articles'),
+    roles_decorator_1.Roles('admin'),
+    joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.deleteArticlesSchema),
+    __param(0, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ArticleController.prototype, "deleteArticles", null);
+ArticleController = ArticleController_1 = __decorate([
     common_1.Controller('/api'),
-    common_1.UseGuards(roels_guard_1.RolesGuard),
-    __metadata("design:paramtypes", [article_service_1.ArticlesService])
-], ArticlesController);
-exports.ArticlesController = ArticlesController;
+    common_1.UseGuards(roles_guard_1.RolesGuard),
+    __metadata("design:paramtypes", [article_service_1.ArticleService])
+], ArticleController);
+exports.ArticleController = ArticleController;
+function formatResponse(data) {
+    let responseData = { code: 0, msg: 'success', data: '' };
+    if (!data) {
+        responseData.code = 1;
+        responseData.msg = 'error';
+    }
+    responseData.data = data;
+    return responseData;
+}
 //# sourceMappingURL=article.controller.js.map

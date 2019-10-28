@@ -14,46 +14,42 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const common_1 = require("@nestjs/common");
-const category_model_1 = require("../../models/category.model");
 const model_util_1 = require("../../utils/model.util");
-const article_model_1 = require("src/models/article.model");
+const category_model_1 = require("../../models/category.model");
 let CategoryService = class CategoryService {
-    constructor(categoryModel, ArticleModel) {
+    constructor(categoryModel) {
         this.categoryModel = categoryModel;
-        this.ArticleModel = ArticleModel;
     }
     async create(newCategory) {
-        const category = await this.categoryModel.create(newCategory);
-        return category;
-    }
-    async getCategory(id) {
-        return this.categoryModel.findById(id);
-    }
-    async getCategories() {
-        return await this.categoryModel.find();
+        return await this.categoryModel.create(newCategory);
     }
     async update(id, data) {
         await this.categoryModel.updateOne({ _id: id }, data);
         return await this.categoryModel.findById(id);
     }
-    async deleteCategory(id) {
+    async getCategories(query = {}, option) {
+        const { skip = 1, limit = 100, sort = {} } = option;
+        return await this.categoryModel.find(query, '', {
+            skip: (skip - 1) * limit,
+            limit,
+            sort,
+        });
+    }
+    async getCategory(id) {
+        return await this.categoryModel.findById(id);
+    }
+    async delete(id) {
         await this.categoryModel.deleteOne({ _id: id });
-        return {
-            msg: 'ok',
-            code: 0,
-        };
+        return {};
     }
     async batchDelete(categoryIds) {
-        let data = await this.categoryModel.deleteMany({ _id: { $in: categoryIds } });
-        return data;
+        return this.categoryModel.deleteMany({ _id: { $in: categoryIds } });
     }
 };
 CategoryService = __decorate([
     common_1.Injectable(),
     __param(0, model_util_1.InjectModel(category_model_1.CategoryModel)),
-    __param(0, model_util_1.InjectModel(article_model_1.ArticleModel)),
-    __metadata("design:paramtypes", [mongoose_1.Model,
-        mongoose_1.Model])
+    __metadata("design:paramtypes", [mongoose_1.Model])
 ], CategoryService);
 exports.CategoryService = CategoryService;
 //# sourceMappingURL=category.service.js.map

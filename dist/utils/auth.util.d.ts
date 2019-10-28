@@ -1,1 +1,1 @@
-export declare const auth: (req: any) => string | object;
+export declare const auth: (req: any, res?: any, next?: any) => string | object;

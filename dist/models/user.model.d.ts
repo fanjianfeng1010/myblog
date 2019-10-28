@@ -5,8 +5,8 @@ export interface User {
     readonly type?: string;
     readonly account?: string;
     readonly password?: string;
-    readonly createdAt?: string | Date;
-    readonly updatedAt?: string | Date;
+    readonly createAt?: string | Date;
+    readonly updateAt?: string | Date;
 }
 export interface UserDocument extends User, Document {
     readonly _id: string;

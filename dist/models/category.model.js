@@ -6,20 +6,13 @@ const CategorySchema = new mongoose.Schema({
     name: {
         type: String,
         min: [1],
-        max: 20,
-        required: true,
-    },
-    order: {
-        type: Number,
-        min: [1],
-        max: 100,
+        max: 150,
         required: true,
     },
     articleCount: {
-        type: String,
-        min: [1],
-        max: 888,
-        required: true,
+        type: Number,
+        max: 10000,
+        default: 0,
     },
 }, {
     timestamps: true,

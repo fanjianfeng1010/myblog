@@ -1,41 +1,45 @@
-/// <reference types="hapi__joi" />
+import { ArticleService } from './article.service';
 import { Article, ArticleDocument } from '../../models/article.model';
-import { ArticlesService } from './article.service';
-import Joi = require('@hapi/joi');
-export declare class ArticlesController {
+import * as Joi from '@hapi/joi';
+export declare class ArticleController {
     private readonly articleService;
-    constructor(articleService: ArticlesService);
+    constructor(articleService: ArticleService);
     static cIdSchema: {
         cid: Joi.StringSchema;
     };
     static idSchema: {
         id: Joi.StringSchema;
     };
-    static deleteArticleSchema: {
+    static deleteArticlesSchema: {
         articleIds: Joi.ArraySchema;
     };
-    create(article: Article): Promise<void>;
-    update(param: {
+    create(article: Article): Promise<IResponse<Article | string>>;
+    update(params: {
         id: string;
-    }, article: Article): Promise<void>;
-    getArticle(query: {
-        id: string;
-    }): Promise<ArticleResponse>;
+    }, article: Article): Promise<IResponse<ArticleDocument>>;
     getArticles(query: {
         page: number;
         limit: number;
         cid: string;
-        category: string;
-    }): Promise<ArticlesResponse>;
+        tag: string;
+    }): Promise<any>;
+    getCurrent(): Promise<any>;
+    getArticle(params: {
+        id: string;
+    }, query: {
+        md?: boolean;
+    }): Promise<IResponse>;
+    deleteArticle(params: {
+        id: string;
+    }): Promise<IResponse>;
+    deleteArticles(body: {
+        articleIds: string[];
+    }): Promise<any>;
 }
-interface ArticlesResponse {
+interface IResponse<T> {
     code: number;
     msg: string;
-    data?: ArticleDocument[];
-}
-interface ArticleResponse {
-    code: number;
-    msg: string;
-    data?: ArticleDocument;
+    data?: T;
+    totalCount?: number;
 }
 export {};

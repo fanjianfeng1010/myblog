@@ -15,8 +15,8 @@ let ArticleModule = class ArticleModule {
 };
 ArticleModule = __decorate([
     common_1.Module({
-        controllers: [article_controller_1.ArticlesController],
-        providers: [article_service_1.ArticlesService, article_model_1.ArticleModelProvider, category_model_1.CategoryModelProvider],
+        controllers: [article_controller_1.ArticleController],
+        providers: [article_model_1.ArticleModelProvider, category_model_1.CategoryModelProvider, article_service_1.ArticleService],
     })
 ], ArticleModule);
 exports.ArticleModule = ArticleModule;
