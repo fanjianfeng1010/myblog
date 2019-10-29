@@ -131,9 +131,8 @@ let ArticleService = class ArticleService {
         return await this.articleModel.countDocuments(filter);
     }
     async batchDelete(articleIds) {
-        return this.articleModel
-            .find({ _id: { $in: articleIds } })
-            .then(async (articles) => {
+        console.log('服务者收到的数据', articleIds);
+        return this.articleModel.find({ _id: { $in: articleIds } }).then(async (articles) => {
             articles.map(async (article) => {
                 return await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
             });

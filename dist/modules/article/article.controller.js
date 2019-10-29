@@ -20,6 +20,7 @@ const joi_validation_pipe_1 = require("../../pipes/joi.validation.pipe");
 const roles_decorator_1 = require("../../decorators/roles.decorator");
 const roles_guard_1 = require("../../guards/roles.guard");
 const Joi = require("@hapi/joi");
+const Qs = require("qs");
 let ArticleController = ArticleController_1 = class ArticleController {
     constructor(articleService) {
         this.articleService = articleService;
@@ -67,7 +68,8 @@ let ArticleController = ArticleController_1 = class ArticleController {
         return formatResponse(data);
     }
     async deleteArticles(body) {
-        let result = await this.articleService.batchDelete(body.articleIds);
+        let data = Qs.parse(body);
+        let result = await this.articleService.batchDelete(data.articleIds);
         let responseData = {
             data: null,
         };
@@ -103,8 +105,7 @@ __decorate([
 __decorate([
     common_1.Put('/articles/:id'),
     roles_decorator_1.Roles('admin'),
-    __param(0, common_1.Param()),
-    __param(1, common_1.Body()),
+    __param(0, common_1.Param()), __param(1, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

@@ -33,7 +33,7 @@ export declare class ArticleController {
         id: string;
     }): Promise<IResponse>;
     deleteArticles(body: {
-        articleIds: string[];
+        articleIds: string;
     }): Promise<any>;
 }
 interface IResponse<T> {

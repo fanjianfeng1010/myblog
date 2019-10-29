@@ -39,9 +39,9 @@ let LoginService = class LoginService {
     async getFirstLoginInfo() {
         const count = await this.userModel.estimatedDocumentCount();
         if (count <= 0) {
-            return { mst: '首次登陆,账号为管理员账号,直接登陆即可生成账号' };
+            return { msg: '首次登陆,账号为管理员账号,直接登陆即可生成账号' };
         }
-        return '没东西返回';
+        return '';
     }
     async login(data) {
         const User = JSON.parse(crypto_util_1.decrypt(data.key));
@@ -51,6 +51,7 @@ let LoginService = class LoginService {
         const result = Joi.validate(User, schema);
         if (count <= 0) {
             if (result.error) {
+                console.log(Joi.validate(User, schema));
                 return {
                     msg: '首次登陆,账号为管理员账号,直接登陆即可生成账号' + result.error.message,
                 };
@@ -76,9 +77,11 @@ let LoginService = class LoginService {
             let token = jwt.sign({ account, roles: ['admin'] }, index_config_1.TOKEN_SECRET_KEY, {
                 expiresIn: 60 * 60 * 12,
             });
-            return token;
+            return { token };
         }
-        return null;
+        return {
+            msg: '用户密码输入错误,请重新检查再登录',
+        };
     }
 };
 LoginService = __decorate([

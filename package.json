@@ -35,6 +35,7 @@
     "markdown-it": "^10.0.0",
     "markdown-it-link-attributes": "^3.0.0",
     "mongoose": "^5.7.6",
+    "qs": "^6.9.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3"

@@ -24,20 +24,10 @@ let LoginController = class LoginController {
         return await this.loginService.getFirstLoginInfo();
     }
     async login(body) {
-        let result = {
-            statusText: '账户不存在',
-            data: null,
+        let data = await this.loginService.login(body);
+        return {
+            data,
         };
-        let token = await this.loginService.login(body);
-        if (token) {
-            result = {
-                statusText: '登录成功',
-                data: {
-                    token,
-                },
-            };
-        }
-        return result;
     }
     isLgon() {
         return { isLogin: true };

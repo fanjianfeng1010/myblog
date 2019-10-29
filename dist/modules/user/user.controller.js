@@ -23,7 +23,7 @@ let UserController = class UserController {
     async getUserLoginInfo(req) {
         const user = auth_util_1.auth(req);
         if (user) {
-            return (await this.userService.getUserByAccount(user.account));
+            return await this.userService.getUserByAccount(user.account);
         }
         else {
             throw new common_1.ForbiddenException('非法请求');
