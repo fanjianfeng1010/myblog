@@ -21,6 +21,11 @@ const ArticleSchema = new mongoose.Schema({
         max: 2000,
         required: true,
     },
+    imgUrl: {
+        type: String,
+        required: false,
+        default: 'https://s2.ax1x.com/2019/10/30/Kf4t41.png',
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'category',

@@ -11,6 +11,7 @@ export interface Article {
     readonly createdAt?: string | Date;
     readonly updatedAt?: string | Date;
     readonly tags?: string[];
+    readonly imgUrl?: string;
 }
 export interface ArticleDocument extends Article, Document {
     readonly _id: string;

@@ -120,7 +120,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ArticleController.prototype, "getArticles", null);
 __decorate([
-    common_1.Get('/rencent'),
+    common_1.Get('/recent'),
     joi_validation_pipe_1.JoiValidationPipe(standard_pagination_validation_1.StandardPaginationSchema),
     joi_validation_pipe_1.JoiValidationPipe(ArticleController_1.cIdSchema),
     __metadata("design:type", Function),

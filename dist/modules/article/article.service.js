@@ -78,7 +78,7 @@ let ArticleService = class ArticleService {
             .populate('category');
     }
     async getCurrentArticles() {
-        const skip = 0, limit = 3, sort = { createAt: -1 };
+        const skip = 0, limit = 3, sort = { createAt: 1 };
         return await this.articleModel
             .find({}, '-content', {
             skip,
@@ -131,7 +131,6 @@ let ArticleService = class ArticleService {
         return await this.articleModel.countDocuments(filter);
     }
     async batchDelete(articleIds) {
-        console.log('服务者收到的数据', articleIds);
         return this.articleModel.find({ _id: { $in: articleIds } }).then(async (articles) => {
             articles.map(async (article) => {
                 return await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
