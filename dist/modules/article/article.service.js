@@ -61,7 +61,7 @@ let ArticleService = class ArticleService {
         return article;
     }
     async getArticles(query, option) {
-        const { skip = 1, limit = 10, sort = { createAt: -1 } } = option;
+        const { skip = 1, limit = 10, sort = { createAt: 1 } } = option;
         let filter = {};
         if (query.tag) {
             filter = Object.assign(Object.assign({}, filter), { tags: { $elemMatch: { $eq: query.tag } } });
@@ -78,7 +78,7 @@ let ArticleService = class ArticleService {
             .populate('category');
     }
     async getCurrentArticles() {
-        const skip = 0, limit = 3, sort = { createAt: 1 };
+        const skip = 0, limit = 3, sort = { createAt: -1 };
         return await this.articleModel
             .find({}, '-content', {
             skip,
@@ -131,7 +131,9 @@ let ArticleService = class ArticleService {
         return await this.articleModel.countDocuments(filter);
     }
     async batchDelete(articleIds) {
-        return this.articleModel.find({ _id: { $in: articleIds } }).then(async (articles) => {
+        return this.articleModel
+            .find({ _id: { $in: articleIds } })
+            .then(async (articles) => {
             articles.map(async (article) => {
                 return await this.categoryModel.updateOne({ _id: article.category }, { $inc: { articleCount: -1 } });
             });
