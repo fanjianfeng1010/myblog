@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.a946d5ce.chunk.css",
-    "main.js": "/static/js/main.0327dc8e.chunk.js",
-    "main.js.map": "/static/js/main.0327dc8e.chunk.js.map",
+    "main.js": "/static/js/main.48837676.chunk.js",
+    "main.js.map": "/static/js/main.48837676.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.76c1ebef.js",
     "runtime-main.js.map": "/static/js/runtime-main.76c1ebef.js.map",
     "static/js/2.3494e62d.chunk.js": "/static/js/2.3494e62d.chunk.js",
     "static/js/2.3494e62d.chunk.js.map": "/static/js/2.3494e62d.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.9c4c129148d61181324764be7047bcd5.js": "/precache-manifest.9c4c129148d61181324764be7047bcd5.js",
+    "precache-manifest.8f0ea40732a2ead7c5c172f9ff7cc870.js": "/precache-manifest.8f0ea40732a2ead7c5c172f9ff7cc870.js",
     "service-worker.js": "/service-worker.js",
     "static/css/main.a946d5ce.chunk.css.map": "/static/css/main.a946d5ce.chunk.css.map",
     "static/media/index.scss": "/static/media/ztt.ca6d1a11.ttf",
@@ -21,6 +21,6 @@
     "static/js/runtime-main.76c1ebef.js",
     "static/js/2.3494e62d.chunk.js",
     "static/css/main.a946d5ce.chunk.css",
-    "static/js/main.0327dc8e.chunk.js"
+    "static/js/main.48837676.chunk.js"
   ]
 }
